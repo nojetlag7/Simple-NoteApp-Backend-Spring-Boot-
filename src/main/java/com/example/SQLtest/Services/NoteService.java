@@ -1,20 +1,22 @@
 package com.example.SQLtest.Services;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.example.SQLtest.DTOs.NoteDTO;
 import com.example.SQLtest.Exceptions.NoteNotFoundException;
 import com.example.SQLtest.Models.Note;
 import com.example.SQLtest.Repositories.NoteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service  // Marks this class as a service layer component
 public class NoteService {
 
     @Autowired
     private NoteRepository noteRepository;
+
 
     // Retrieve all notes from the database
     public List<Note> getALlNotes() {
@@ -44,8 +46,11 @@ public class NoteService {
     }
 
     // Delete a note by its ID
-    public void deleteNote(long id) {
-        noteRepository.deleteById(id);
+    public void deleteNote(Long id) {
+        Note note = noteRepository.findById(id)
+                .orElseThrow(() -> new NoteNotFoundException(id));
+        //jpa automatically handles the deletion of all commments associated with the notes
+        noteRepository.delete(note);
     }
 
     // Search notes by tags
